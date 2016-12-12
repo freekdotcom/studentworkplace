@@ -1,0 +1,42 @@
+{
+  "project_info": {
+    "project_number": "509793188390",
+    "firebase_url": "https://studentworkplace-dced9.firebaseio.com",
+    "project_id": "studentworkplace-dced9",
+    "storage_bucket": "studentworkplace-dced9.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:509793188390:android:0e5f8af9290a8cf0",
+        "android_client_info": {
+          "package_name": "com.example.frederick.studentworkplace"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "509793188390-one93jamp93btllnrpc7ikukdna17vtp.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAwJMeY711ciq1sn4BmRvc33BhHBmOwSr0"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 1,
+          "other_platform_oauth_client": []
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
