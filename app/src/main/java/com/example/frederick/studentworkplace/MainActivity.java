@@ -1,9 +1,10 @@
 package com.example.frederick.studentworkplace;
 
+import android.content.Context;
 import android.content.Intent;
+import android.hardware.*;
+import android.hardware.Sensor;
 import android.os.Bundle;
-import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.View;
@@ -22,12 +23,20 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity implements SensorEventListener {
 
     private FirebaseAuth mFirebaseAuth;
     private FirebaseUser mFirebaseUser;
     private DatabaseReference mDatabase;
     private String mUserId;
+
+    //sensordata
+    private SensorManager mSensorManager;
+    private android.hardware.Sensor brightnes;
+    private android.hardware.Sensor gps;
+    private android.hardware.Sensor microphone;
+
+    private float birghtnessValue;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -40,6 +49,12 @@ public class MainActivity extends AppCompatActivity {
         mFirebaseAuth = FirebaseAuth.getInstance();
         mFirebaseUser = mFirebaseAuth.getCurrentUser();
         mDatabase = FirebaseDatabase.getInstance().getReference();
+
+        //sensor
+        mSensorManager = (SensorManager) getSystemService(Context.SENSOR_SERVICE);
+        brightnes = mSensorManager.getDefaultSensor(android.hardware.Sensor.TYPE_LIGHT);
+        microphone = mSensorManager.getDefaultSensor(android.hardware.Sensor.TYPE)
+
 
         if (mFirebaseUser == null) {
             // Not logged in, launch the Log In activity
@@ -57,7 +72,7 @@ public class MainActivity extends AppCompatActivity {
             final Button button = (Button) findViewById(R.id.addButton);
             button.setOnClickListener(new View.OnClickListener(){
                 public void onClick(View v){
-                    Item item = new Item(text.getText().toString());
+                    Item item = new Item(text.getText().toString(), birghtnessValue);
                     mDatabase.child("users").child(mUserId).child("items").push().setValue(item);
                     text.setText("");
                 }
@@ -122,5 +137,30 @@ public class MainActivity extends AppCompatActivity {
         }
 
         return super.onOptionsItemSelected(item);
+    }
+
+    @Override
+    public void onSensorChanged(SensorEvent event) {
+        Sensor sensor = event.sensor;
+        if(sensor.getType() == Sensor.TYPE_LIGHT){
+            birghtnessValue = event.values[0];
+        }
+    }
+
+    @Override
+    public void onAccuracyChanged(Sensor sensor, int accuracy) {
+
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        mSensorManager.registerListener((SensorEventListener) this, brightnes, SensorManager.SENSOR_DELAY_NORMAL);
+    }
+
+    @Override
+    protected void onPause() {
+        super.onResume();
+        mSensorManager.unregisterListener((SensorListener)this);
     }
 }
