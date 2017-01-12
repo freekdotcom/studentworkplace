@@ -3,6 +3,8 @@
     package="com.example.frederick.studentworkplace">
 
     <uses-feature android:name="android.hardware.Sensor.light"/>
+    <uses-feature android:name="android.hardware.Sensor.accelerometer"/>
+    <uses-permission android:name="android.permission.RECORD_AUDIO"/>
 
     <application
         android:allowBackup="true"

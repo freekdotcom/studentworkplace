@@ -4,9 +4,12 @@ import android.content.Context;
 import android.content.Intent;
 import android.hardware.*;
 import android.hardware.Sensor;
+import android.media.MediaRecorder;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.View;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -33,10 +36,15 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
     //sensordata
     private SensorManager mSensorManager;
     private android.hardware.Sensor brightnes;
-    private android.hardware.Sensor gps;
-    private android.hardware.Sensor microphone;
+    private android.hardware.Sensor accelerometer;
 
     private float birghtnessValue;
+    private float[] accelerationValue;
+
+    MediaRecorder mRecorder;
+    private static double mEMA = 0.0;
+    static final private double EMA_FILTER = 0.6;
+    final Handler mHandler = new Handler();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -53,7 +61,7 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
         //sensor
         mSensorManager = (SensorManager) getSystemService(Context.SENSOR_SERVICE);
         brightnes = mSensorManager.getDefaultSensor(android.hardware.Sensor.TYPE_LIGHT);
-        microphone = mSensorManager.getDefaultSensor(android.hardware.Sensor.TYPE)
+        accelerometer = mSensorManager.getDefaultSensor(android.hardware.Sensor.TYPE_ACCELEROMETER);
 
 
         if (mFirebaseUser == null) {
@@ -72,7 +80,7 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
             final Button button = (Button) findViewById(R.id.addButton);
             button.setOnClickListener(new View.OnClickListener(){
                 public void onClick(View v){
-                    Item item = new Item(text.getText().toString(), birghtnessValue);
+                    Item item = new Item(text.getText().toString(), birghtnessValue, accelerationValue, getAmplitude());
                     mDatabase.child("users").child(mUserId).child("items").push().setValue(item);
                     text.setText("");
                 }
@@ -145,6 +153,9 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
         if(sensor.getType() == Sensor.TYPE_LIGHT){
             birghtnessValue = event.values[0];
         }
+        else if(sensor.getType() == Sensor.TYPE_ACCELEROMETER){
+            accelerationValue = event.values;
+        }
     }
 
     @Override
@@ -156,11 +167,61 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
     protected void onResume() {
         super.onResume();
         mSensorManager.registerListener((SensorEventListener) this, brightnes, SensorManager.SENSOR_DELAY_NORMAL);
+        mSensorManager.registerListener((SensorEventListener) this, accelerometer, SensorManager.SENSOR_DELAY_NORMAL);
+        startRecorder();
     }
 
     @Override
     protected void onPause() {
         super.onResume();
         mSensorManager.unregisterListener((SensorListener)this);
+        stopRecorder();
+    }
+
+    public void startRecorder(){
+        if (mRecorder == null)
+        {
+            mRecorder = new MediaRecorder();
+            mRecorder.setAudioSource(MediaRecorder.AudioSource.MIC);
+            mRecorder.setOutputFormat(MediaRecorder.OutputFormat.THREE_GPP);
+            mRecorder.setAudioEncoder(MediaRecorder.AudioEncoder.AMR_NB);
+            mRecorder.setOutputFile("/dev/null");
+            try
+            {
+                mRecorder.prepare();
+            }catch (java.io.IOException ioe) {
+                android.util.Log.e("[Monkey]", "IOException: " +
+                        android.util.Log.getStackTraceString(ioe));
+
+            }catch (java.lang.SecurityException e) {
+                android.util.Log.e("[Monkey]", "SecurityException: " +
+                        android.util.Log.getStackTraceString(e));
+            }
+            try
+            {
+                mRecorder.start();
+            }catch (java.lang.SecurityException e) {
+                android.util.Log.e("[Monkey]", "SecurityException: " +
+                        android.util.Log.getStackTraceString(e));
+            }
+
+            //mEMA = 0.0;
+        }
+
+    }
+    public void stopRecorder() {
+        if (mRecorder != null) {
+            mRecorder.stop();
+            mRecorder.release();
+            mRecorder = null;
+        }
+    }
+
+    public double getAmplitude() {
+        if (mRecorder != null)
+            return  (mRecorder.getMaxAmplitude());
+        else
+            return 0;
+
     }
 }

@@ -8,35 +8,48 @@ package com.example.frederick.studentworkplace;
 public class Item {
 
     private String title;
-    private String location;
     private float brightnes;
-    private float loudnes;
+    private float accelerometerX;
+    private float accelerometerY;
+    private float accelerometerZ;
+    private double loudness;
 
     public Item() {}
 
-    public Item(String title, float brightnes) {
+    public Item(String title, float brightnes, float[] accelerometer, double loudness) {
         this.title = title;
-        this.location = "0.0486790,0.07654234";//// TODO: 22-12-2016 add location
-        this.brightnes = brightnes; //// TODO: 22-12-2016 add light sensor data
-        this.loudnes = 0.05f; //// TODO: 22-12-2016 add microphone sensor data
+        this.brightnes = brightnes;
+        if(accelerometer.length > 2){
+            this.accelerometerX = accelerometer[0];
+            this.accelerometerY = accelerometer[1];
+            this.accelerometerZ = accelerometer[2];
+        }
+        this.loudness = loudness;
     }
 
     public String getTitle() {
         return title;
     }
 
-    public String getLocation(){
-        return location;
-    }
-
     public float getBrightnes(){
         return brightnes;
     }
 
-    public float getLoudnes(){
-        return loudnes;
+    public float getAccelerometerX(){
+        return accelerometerX;
     }
 
+    public float getAccelerometerY(){
+        return accelerometerY;
+    }
+
+    public float getAccelerometerZ(){
+        return accelerometerZ;
+    }
+
+    public double getLoudness(){
+        return loudness;
+    }
 
     public void setTitle(String title) {
         this.title = title;
