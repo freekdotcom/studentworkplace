@@ -17,6 +17,7 @@ import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ListView;
+import android.widget.Toast;
 
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
@@ -33,6 +34,8 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
     private DatabaseReference mDatabase;
     private String mUserId;
 
+    private Button btnCheckPlace;
+
     //sensordata
     private SensorManager mSensorManager;
     private android.hardware.Sensor brightnes;
@@ -42,9 +45,6 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
     private float[] accelerationValue;
 
     MediaRecorder mRecorder;
-    private static double mEMA = 0.0;
-    static final private double EMA_FILTER = 0.6;
-    final Handler mHandler = new Handler();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -52,6 +52,8 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
         setContentView(R.layout.activity_main);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
+
+
 
         // Initialize Firebase Auth
         mFirebaseAuth = FirebaseAuth.getInstance();
@@ -114,6 +116,19 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
                 }
             });
         }
+
+        btnCheckPlace = (Button) findViewById(R.id.check_place);
+        btnCheckPlace.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if(getAmplitude() > 15000 || birghtnessValue < 150 || accelerationValue[0] > 1 || accelerationValue[1] > 1 || accelerationValue[2] < 8){
+                    Toast.makeText(v.getContext(),"This location is not ideal to study", Toast.LENGTH_LONG).show();
+                } else {
+                    Toast.makeText(v.getContext(),"This is a good location!", Toast.LENGTH_LONG).show();
+
+                }
+            }
+        });
     }
 
     @Override

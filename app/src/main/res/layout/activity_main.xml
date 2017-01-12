@@ -24,4 +24,12 @@
 
     <include layout="@layout/content_main"/>
 
+    <Button
+        android:text="Check cuurent studyplace"
+        android:layout_width="213dp"
+        android:layout_height="wrap_content"
+        android:id="@+id/check_place"
+        app:layout_anchorGravity="bottom|center_horizontal"
+        android:layout_gravity="bottom|center_horizontal" />
+
 </android.support.design.widget.CoordinatorLayout>
